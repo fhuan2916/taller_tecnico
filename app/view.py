@@ -66,13 +66,8 @@ class CobroView(ModelView):
 # =========================================================
 from app import appbuilder
 
-# Registramos primero las categorías de forma independiente con un ícono para que no falle el desempaquetado
-appbuilder.add_link("Gestion", href="#", icon="fa-folder", category="Gestion")
-appbuilder.add_link("Taller", href="#", icon="fa-folder", category="Taller")
-appbuilder.add_link("Finanzas", href="#", icon="fa-folder", category="Finanzas")
-
-# Ahora añadimos las vistas asociándolas a las categorías previamente estructuradas
-appbuilder.add_view(ClienteView, "Clientes", icon="fa-users", category="Gestion")
-appbuilder.add_view(EquipoView, "Equipos", icon="fa-laptop", category="Gestion")
-appbuilder.add_view(OrdenServicioView, "Órdenes de Trabajo", icon="fa-wrench", category="Taller")
-appbuilder.add_view(CobroView, "Control de Cobros", icon="fa-money", category="Finanzas")
+# Registramos las vistas SIN categorizar por ahora, directo a la raíz del menú
+appbuilder.add_view(ClienteView, "Clientes", icon="fa-users")
+appbuilder.add_view(EquipoView, "Equipos", icon="fa-laptop")
+appbuilder.add_view(OrdenServicioView, "Órdenes de Trabajo", icon="fa-wrench")
+appbuilder.add_view(CobroView, "Control de Cobros", icon="fa-money")
