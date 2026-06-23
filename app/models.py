@@ -12,7 +12,7 @@ class Cliente(Model):
     correo = Column(String(100), nullable=True)
 
     def __repr__(self):
-        return self.nombre
+        return self.nombre if self.nombre else f"Cliente {self.id}"
 
 # 2. Tabla Equipos
 class Equipo(Model):
@@ -26,7 +26,7 @@ class Equipo(Model):
     cliente = relationship("Cliente")
 
     def __repr__(self):
-        return f"{self.marca} {self.modelo} ({self.cliente.nombre})"
+        return f"{self.marca} {self.modelo}" if self.marca else f"Equipo {self.id}"
 
 # 3. Tabla Ordenes de Servicio
 class OrdenServicio(Model):
@@ -41,7 +41,7 @@ class OrdenServicio(Model):
     equipo = relationship("Equipo")
 
     def __repr__(self):
-        return f"Orden #{self.id} - {self.equipo.marca}"
+        return f"Orden #{self.id}"
 
 # 4. Tabla Detalle de Repuestos
 class RepuestoDetalle(Model):
