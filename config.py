@@ -15,3 +15,12 @@ APP_THEME = "bootstrap-theme.css"  # Tema visual por defecto
 
 # Habilitar la gestión de usuarios y roles nativa
 AUTH_TYPE = 1  # Autenticación basada en Base de Datos (Login/Logout)
+
+# 1. Definir el idioma por defecto de la aplicación
+BABEL_DEFAULT_LOCALE = "es"
+
+# 2. Habilitar los idiomas que el sistema va a soportar (puedes dejar solo español o ambos)
+LANGUAGES = {
+    "es": {"flag": "bo", "name": "Español"},
+    "en": {"flag": "us", "name": "English"},
+}
