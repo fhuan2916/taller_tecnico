@@ -4,7 +4,7 @@ from app import appbuilder
 from app.models import OrdenServicio
 from app import db
 from collections import Counter
-
+from google import genai
 
 # 1. Importaciones limpias de tus modelos locales
 from .models import Cliente, Equipo, OrdenServicio, RepuestoDetalle, ServicioPrestado, Cobro
@@ -41,8 +41,44 @@ class PanelGraficosView(BaseView):
 
     @expose("/ver/")
     def ver_graficos(self):
+        # ordenes = db.session.query(OrdenServicio).all()
+        # total_ordenes = len(ordenes)
+        
+        # estados_lista = [o.estado for o in ordenes if o.estado]
+        # fallas_lista = [o.falla_reportada for o in ordenes if o.falla_reportada]
+        
+        # conteo_estados = Counter(estados_lista)
+        # conteo_fallas = Counter(fallas_lista)
+        # ordenes_activas = conteo_estados.get("En Proceso", 0) + conteo_estados.get("Recibido", 0)
+        # tiempo_estimado_entrega = ordenes_activas * 1.5  # Asumiendo 1.5 horas de media por servicio
+        
+        # # Pronóstico 2: Tasa de efectividad de reparaciones futuras
+        # terminadas = conteo_estados.get("Terminado", 0) + conteo_estados.get("Entregado", 0)
+        # tasa_efectividad = (terminadas / total_ordenes * 100) if total_ordenes > 0 else 100
+        
+        # # Pronóstico 3: Proyección de Crecimiento de Órdenes para el siguiente mes (+15% tendencia)
+        # proyeccion_ordenes_mes_siguiente = round(total_ordenes * 1.15)
+
+        # # Gráfica 2: Pronósticos sobre Tipos de Fallas
+        # # Pronóstico 4: Demanda estimada de repuestos críticos (basado en la falla más común)
+        # falla_mas_comun = conteo_fallas.most_common(1)[0][0] if fallas_lista else "Ninguna"
+        
+        # # Pronóstico 5: Estimación de ingresos promedio requeridos por mantenimiento de software vs hardware
+        # # Pronóstico 6: Tiempo promedio de diagnóstico según complejidad de la falla prevalente
+
+        # return self.render_template(
+        #     "graficos.html",
+        #     estados_labels=list(conteo_estados.keys()),
+        #     estados_valores=list(conteo_estados.values()),
+        #     fallas_labels=list(conteo_fallas.keys()),
+        #     fallas_valores=list(conteo_fallas.values()),
+        #     # Enviamos las variables predictivas al HTML
+        #     tiempo_entrega=round(tiempo_estimado_entrega, 1),
+        #     tasa_efectividad=round(tasa_efectividad, 1),
+        #     proyeccion_total=proyeccion_ordenes_mes_siguiente,
+        #     falla_comun=falla_mas_comun
+        # )
         ordenes = db.session.query(OrdenServicio).all()
-        total_ordenes = len(ordenes)
         
         estados_lista = [o.estado for o in ordenes if o.estado]
         fallas_lista = [o.falla_reportada for o in ordenes if o.falla_reportada]
@@ -51,26 +87,31 @@ class PanelGraficosView(BaseView):
         conteo_fallas = Counter(fallas_lista)
         
         # =========================================================
-        # LÓGICA DE PRONÓSTICOS (Contexto: Taller Técnico)
+        # 🤖 INTEGRACIÓN CON GEMINI IA
         # =========================================================
-        # Gráfica 1: Pronósticos sobre Estados de las Órdenes
-        # Pronóstico 1: Cuello de botella estimado en base a órdenes "Recibidas" o "En Proceso"
-        ordenes_activas = conteo_estados.get("En Proceso", 0) + conteo_estados.get("Recibido", 0)
-        tiempo_estimado_entrega = ordenes_activas * 1.5  # Asumiendo 1.5 horas de media por servicio
-        
-        # Pronóstico 2: Tasa de efectividad de reparaciones futuras
-        terminadas = conteo_estados.get("Terminado", 0) + conteo_estados.get("Entregado", 0)
-        tasa_efectividad = (terminadas / total_ordenes * 100) if total_ordenes > 0 else 100
-        
-        # Pronóstico 3: Proyección de Crecimiento de Órdenes para el siguiente mes (+15% tendencia)
-        proyeccion_ordenes_mes_siguiente = round(total_ordenes * 1.15)
-
-        # Gráfica 2: Pronósticos sobre Tipos de Fallas
-        # Pronóstico 4: Demanda estimada de repuestos críticos (basado en la falla más común)
-        falla_mas_comun = conteo_fallas.most_common(1)[0][0] if fallas_lista else "Ninguna"
-        
-        # Pronóstico 5: Estimación de ingresos promedio requeridos por mantenimiento de software vs hardware
-        # Pronóstico 6: Tiempo promedio de diagnóstico según complejidad de la falla prevalente
+        # RECOMENDACIÓN: Reemplaza "TU_API_KEY_AQUÍ" por tu clave de Google AI Studio
+        try:
+            client = genai.Client(api_key="AQ.Ab8RN6IdcKRwICla7O57q0PekW_NecJXvQP5E2HfRcW9tW0f9w")
+            
+            # Construimos un prompt contextualizado con los datos reales de tu taller
+            prompt = f"""
+            Actúa como un experto en Auditoría de Sistemas y Business Intelligence para un taller de soporte técnico computacional.
+            Analiza los siguientes datos actuales del negocio:
+            - Total de órdenes en el sistema: {len(ordenes)}
+            - Distribución por estados: {dict(conteo_estados)}
+            - Fallas recurrentes reportadas por los clientes: {dict(conteo_fallas)}
+            
+            Genera un informe breve de pronóstico operativo y estratégico en exactamente 3 puntos concisos (máximo 2 líneas por punto). Enfatiza proyecciones de inventario, cuellos de botella y carga técnica futura. Evita usar formatos Markdown complejos como asteriscos en exceso.
+            """
+            
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+            )
+            reporte_ia = response.text
+        except Exception as e:
+            # Resguardo en caso de que falle la conexión o falte la API Key
+            reporte_ia = "Módulo IA temporalmente en mantenimiento. Verifique la API Key de Google Cloud."
 
         return self.render_template(
             "graficos.html",
@@ -78,11 +119,8 @@ class PanelGraficosView(BaseView):
             estados_valores=list(conteo_estados.values()),
             fallas_labels=list(conteo_fallas.keys()),
             fallas_valores=list(conteo_fallas.values()),
-            # Enviamos las variables predictivas al HTML
-            tiempo_entrega=round(tiempo_estimado_entrega, 1),
-            tasa_efectividad=round(tasa_efectividad, 1),
-            proyeccion_total=proyeccion_ordenes_mes_siguiente,
-            falla_comun=falla_mas_comun
+            # Enviamos el informe generado por la IA a la interfaz
+            reporte_ia=reporte_ia
         )
 
 # =========================================================
