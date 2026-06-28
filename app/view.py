@@ -32,50 +32,6 @@ class CobroView(ModelView):
     datamodel = SQLAInterface(Cobro)
     list_columns = ['orden_id', 'monto_total', 'estado_pago', 'metodo_pago']
 
-
-# =========================================================
-# 3. ROMPER EL BUCLE: Importamos y registramos al FINAL ABSOLUTO
-# ======================================================== # <-- ¡Esta línea debe estar ARRIBA de todos los add_view!
-
-
-############################################################################
-# Vista para el Gráfico Estadístico de Órdenes
-# Vista para el Gráfico Estadístico de Órdenes
-# Vista para el Gráfico Estadístico de Órdenes
-# Vista para el Gráfico Estadístico de Órdenes
-# Vista para el Gráfico Estadístico de Órdenes
-# class OrdenServicioChartView(GroupByChartView):
-#     datamodel = SQLAInterface(OrdenServicio)
-#     chart_title = "Panel de Inteligencia de Negocios - Taller Técnico"
-#     chart_type = "bar"
-    
-#     # 1. Mapeamos las etiquetas usando columnas de texto directo de tu modelo
-#     label_columns = {
-#         "estado": "Estado de la Órden",
-#         "falla_reportada": "Tipos de Falla Comunes"
-#     }
-    
-#     # 2. Agrupamos solo por campos que guarden texto directo
-#     group_by_columns = ["estado", "falla_reportada"]
-    
-#     # 3. Ajustamos las definiciones de las series para estas dos variables
-#     definitions = [
-#         {
-#             "group": "estado",
-#             "series": [(aggregate_count, "estado")]
-#         },
-#         {
-#             "group": "falla_reportada",
-#             "series": [(aggregate_count, "falla_reportada")]
-#         }
-#     ]
-    
-#     # Colores llamativos que contrastan perfecto con el fondo oscuro
-#     chart_colors = ["#3498db", "#1abc9c", "#2ecc71", "#e74c3c", "#f1c40f"]  
-
-############################################################################
-
-
 class PanelGraficosView(BaseView):
     route_base = "/panel_graficos"
     
