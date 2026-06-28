@@ -91,7 +91,7 @@ class PanelGraficosView(BaseView):
         # =========================================================
         # RECOMENDACIÓN: Reemplaza "TU_API_KEY_AQUÍ" por tu clave de Google AI Studio
         try:
-            client = genai.Client(api_key="AQ.Ab8RN6IdcKRwICla7O57q0PekW_NecJXvQP5E2HfRcW9tW0f9w")
+            client = genai.Client(api_key="")
             
             # Construimos un prompt contextualizado con los datos reales de tu taller
             prompt = f"""
