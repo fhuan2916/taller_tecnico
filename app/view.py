@@ -41,20 +41,48 @@ class PanelGraficosView(BaseView):
 
     @expose("/ver/")
     def ver_graficos(self):
-        # ... (Todo tu código interno de consultas se queda exactamente igual) ...
         ordenes = db.session.query(OrdenServicio).all()
+        total_ordenes = len(ordenes)
+        
         estados_lista = [o.estado for o in ordenes if o.estado]
         fallas_lista = [o.falla_reportada for o in ordenes if o.falla_reportada]
         
         conteo_estados = Counter(estados_lista)
         conteo_fallas = Counter(fallas_lista)
         
+        # =========================================================
+        # LÓGICA DE PRONÓSTICOS (Contexto: Taller Técnico)
+        # =========================================================
+        # Gráfica 1: Pronósticos sobre Estados de las Órdenes
+        # Pronóstico 1: Cuello de botella estimado en base a órdenes "Recibidas" o "En Proceso"
+        ordenes_activas = conteo_estados.get("En Proceso", 0) + conteo_estados.get("Recibido", 0)
+        tiempo_estimado_entrega = ordenes_activas * 1.5  # Asumiendo 1.5 horas de media por servicio
+        
+        # Pronóstico 2: Tasa de efectividad de reparaciones futuras
+        terminadas = conteo_estados.get("Terminado", 0) + conteo_estados.get("Entregado", 0)
+        tasa_efectividad = (terminadas / total_ordenes * 100) if total_ordenes > 0 else 100
+        
+        # Pronóstico 3: Proyección de Crecimiento de Órdenes para el siguiente mes (+15% tendencia)
+        proyeccion_ordenes_mes_siguiente = round(total_ordenes * 1.15)
+
+        # Gráfica 2: Pronósticos sobre Tipos de Fallas
+        # Pronóstico 4: Demanda estimada de repuestos críticos (basado en la falla más común)
+        falla_mas_comun = conteo_fallas.most_common(1)[0][0] if fallas_lista else "Ninguna"
+        
+        # Pronóstico 5: Estimación de ingresos promedio requeridos por mantenimiento de software vs hardware
+        # Pronóstico 6: Tiempo promedio de diagnóstico según complejidad de la falla prevalente
+
         return self.render_template(
             "graficos.html",
             estados_labels=list(conteo_estados.keys()),
             estados_valores=list(conteo_estados.values()),
             fallas_labels=list(conteo_fallas.keys()),
-            fallas_valores=list(conteo_fallas.values())
+            fallas_valores=list(conteo_fallas.values()),
+            # Enviamos las variables predictivas al HTML
+            tiempo_entrega=round(tiempo_estimado_entrega, 1),
+            tasa_efectividad=round(tasa_efectividad, 1),
+            proyeccion_total=proyeccion_ordenes_mes_siguiente,
+            falla_comun=falla_mas_comun
         )
 
 # =========================================================

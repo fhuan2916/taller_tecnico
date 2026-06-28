@@ -11,7 +11,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Configuraciones de Flask-AppBuilder
 APP_NAME = "Taller Técnico Oruro"
-APP_THEME = "darkly.css"  # Tema visual por defecto
+APP_THEME = "cyborg.css"  # Tema visual por defecto
 
 # Habilitar la gestión de usuarios y roles nativa
 AUTH_TYPE = 1  # Autenticación basada en Base de Datos (Login/Logout)
